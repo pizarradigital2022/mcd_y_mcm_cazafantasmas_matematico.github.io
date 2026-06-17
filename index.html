@@ -425,25 +425,29 @@
         let tiempoParaResponder = 10;
         let tiempoParaRebotar = 5;
 
-        // --- SISTEMA DE CAPTURA DE TECLADO ---
+       // --- SISTEMA DE CAPTURA DE TECLADO (CORREGIDO) ---
         document.addEventListener('keydown', function(event) {
             if (document.getElementById('screen-2').classList.contains('active')) {
                 const key = event.key.toLowerCase();
                 
-                // Si nadie tiene el turno tomado
+                // Si nadie tiene el turno tomado todavía
                 if (equipoActivo === null) {
-                    // En estado de rebote, solo puede pulsar el que NO falló antes
                     if (enEstadoRebote) {
+                        // En rebote, solo permitimos al equipo que no falló
                         if (key === 'a' && !document.getElementById('btn-pulsar-caza').disabled) {
+                            event.preventDefault(); // Evita que la 'a' se escriba en el input
                             pulsar('caza');
                         } else if (key === 'l' && !document.getElementById('btn-pulsar-fant').disabled) {
+                            event.preventDefault(); // Evita que la 'l' se escriba en el input
                             pulsar('fant');
                         }
                     } else {
                         // Flujo normal: cualquiera puede pulsar
                         if (key === 'a') {
+                            event.preventDefault(); // Evita que la 'a' se cuele en el input
                             pulsar('caza');
                         } else if (key === 'l') {
+                            event.preventDefault(); // Evita que la 'l' se cuele en el input
                             pulsar('fant');
                         }
                     }
