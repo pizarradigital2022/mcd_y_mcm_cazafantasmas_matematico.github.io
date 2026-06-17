@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCD y MCM: ¡Cazafantasmas Matemático!</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        /* ESTILOS GENERALES (Temática Cazafantasmas) */
+        body {
+            background-color: #111;
+            color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1, h2, h3 {
+            color: #39ff14; /* Verde moco */
+            text-shadow: 0 0 10px #39ff14;
+        }
+
+        .screen {
+            display: none;
+            max-width: 950px;
+            margin: 0 auto;
+            background: #222;
+            padding: 30px;
+            border: 4px solid #ff4500; /* Naranja rayo */
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+
+        .active {
+            display: block;
+        }
+
+        .img-placeholder {
+            background: #333;
+            border: 2px dashed #888;
+            padding: 10px;
+            margin: 15px auto;
+            color: #aaa;
+            max-width: 100%;
+        }
+
+        /* Botones */
+        button {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px #990000;
+            transition: 0.2s;
+        }
+
+        button:hover { background-color: #ff6347; }
+        button:active { transform: translateY(2px); box-shadow: 0 2px #990000; }
+        button:disabled { background-color: #555; color: #888; cursor: not-allowed; box-shadow: none; }
+
+        /* PANTALLA 1: Configuración */
+        .config-group {
+            margin: 20px 0;
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #39ff14;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+
+        .name-setting {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"], select, input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            background: #111;
+            color: #fff;
+            border: 1px solid #ff4500;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        /* PANTALLA 2: Juego */
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .panel {
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            transition: 0.3s;
+            border-width: 5px;
+            border-style: solid;
+        }
+
+        #panel-caza { background-color: #1a2a3a; border-color: #0088ff; }
+        #panel-fant { background-color: #2a1a2a; border-color: #cc00ff; }
+
+        .turn-active {
+            box-shadow: 0 0 30px #39ff14 !important;
+            transform: scale(1.03);
+            border-color: #39ff14 !important;
+        }
+
+        .pulsador {
+            width: 100%;
+            padding: 25px;
+            font-size: 18px;
+            background-color: #cc0000;
+            margin-bottom: 15px;
+        }
+
+        .key-hint {
+            display: block;
+            font-size: 12px;
+            margin-top: 5px;
+            color: #ffcc00;
+        }
+
+        #central-board {
+            background: #000;
+            border: 2px solid #39ff14;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        #timer { font-size: 32px; color: #ffcc00; font-weight: bold; }
+        #pregunta-texto { font-size: 26px; margin: 15px 0; color: #39ff14; }
+        #feedback { font-size: 20px; font-weight: bold; height: 30px; margin-top: 10px; }
+
+        /* PANTALLA 3: Resultados */
+        .stats-box {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            text-align: left;
+            max-width: 600px;
+            border: 1px solid #ff4500;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="screen-1" class="screen active">
+        <h1>🚫 CAZAFANTASMAS MATEMÁTICO 👻</h1>
+        
+        <div class="img-placeholder">
+            <img src="https://via.placeholder.com/600x150/222/39ff14?text=[Imagen+Ecto-1+o+Logo]" alt="Header" style="max-width:100%;">
+        </div>
+
+        <div class="config-group">
+            <div class="name-setting">
+                <label>Nombre Equipo Izquierdo:</label>
+                <input type="text" id="name-caza-input" placeholder="Cazafantasmas" maxlength="15">
+                <small style="color: #0088ff;">Tecla Pulsador: <strong>A</strong></small>
+            </div>
+            <div class="name-setting">
+                <label>Nombre Equipo Derecho:</label>
+                <input type="text" id="name-fant-input" placeholder="Fantasmas" maxlength="15">
+                <small style="color: #cc00ff;">Tecla Pulsador: <strong>L</strong></small>
+            </div>
+        </div>
+
+        <div class="config-group">
+            <div>
+                <label>Modo:</label><br>
+                <select id="game-mode">
+                    <option value="both">MCD y MCM mezclados</option>
+                    <option value="mcd">Solo MCD</option>
+                    <option value="mcm">Solo MCM</option>
+                </select>
+            </div>
+            <div>
+                <label>Tiempo:</label><br>
+                <select id="game-time">
+                    <option value="180">3 Minutos</option>
+                    <option value="300">5 Minutos</option>
+                    <option value="600">10 Minutos</option>
+                    <option value="900">15 Minutos</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="startGame()">¡Encender Equipos de Protones!</button>
+    </div>
+
+    <div id="screen-2" class="screen">
+        <div id="central-board">
+            <div id="timer">TIEMPO: 00:00</div>
+            <div id="pregunta-texto">Iniciando escaneo...</div>
+            <div id="feedback"></div>
+        </div>
+
+        <div class="game-container">
+            <div id="panel-caza" class="panel">
+                <h2 id="display-name-caza">EQUIPO 1</h2>
+                <div class="img-placeholder">
+                    <img src="https://via.placeholder.com/200x100/1a2a3a/0088ff?text=[Equipo+1]" alt="Logo Caza" style="max-width:100%;">
+                </div>
+                <h3>Puntos: <span id="score-caza">0</span></h3>
+                <button id="btn-pulsar-caza" class="pulsador" onclick="pulsar('caza')">PULSAR (A)</button>
+                <div class="panel-inputs">
+                    <input type="number" id="input-caza" placeholder="Escribe..." disabled>
+                    <button id="btn-enviar-caza" onclick="enviarRespuesta('caza')" disabled>OK</button>
+                </div>
+            </div>
+
+            <div id="panel-fant" class="panel">
+                <h2 id="display-name-fant">EQUIPO 2</h2>
+                <div class="img-placeholder">
+                    <img src="https://via.placeholder.com/200x100/2a1a2a/cc00ff?text=[Equipo+2]" alt="Logo Fant" style="max-width:100%;">
+                </div>
+                <h3>Puntos: <span id="score-fant">0</span></h3>
+                <button id="btn-pulsar-fant" class="pulsador" onclick="pulsar('fant')">PULSAR (L)</button>
+                <div class="panel-inputs">
+                    <input type="number" id="input-fant" placeholder="Escribe..." disabled>
+                    <button id="btn-enviar-fant" onclick="enviarRespuesta('fant')" disabled>OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-3" class="screen">
+        <h1>🛸 INFORME DE LA CENTRAL</h1>
+        <h2 id="ganador-texto" style="font-size: 36px;"></h2>
+        
+        <div class="stats-box">
+            <p><strong>Puntuación Final:</strong></p>
+            <ul>
+                <li><span id="final-name-caza"></span>: <span id="final-score-caza"></span> puntos</li>
+                <li><span id="final-name-fant"></span>: <span id="final-score-fant"></span> puntos</li>
+            </ul>
+            <hr>
+            <h3>📊 Estadísticas:</h3>
+            <ul>
+                <li>Preguntas Totales: <span id="stat-totales">0</span></li>
+                <li>Fallos: <span id="stat-fallos">0</span></li>
+                <li>Aciertos del primer equipo: <span id="stat-aciertos-caza">0</span></li>
+                <li>Aciertos del segundo equipo: <span id="stat-aciertos-fant">0</span></li>
+            </ul>
+        </div>
+
+        <button onclick="restartGame()">Nueva Partida</button>
+    </div>
+
+    <script>
+        // Variables de Juego
+        let tiempoRestante, temporizadorPrincipal, temporizadorRespuesta;
+        let num1, num2, tipoPregunta, respuestaCorrecta;
+        let puntosCaza = 0, puntosFant = 0;
+        let statTotales = 0, statAciertosCaza = 0, statAciertosFant = 0, statFallos = 0;
+        
+        let nombreCaza = "Cazafantasmas";
+        let nombreFant = "Fantasmas";
+
+        let equipoActivo = null; // Quien pulsó primero
+        let enEstadoRebote = false;
+
+        // --- LÓGICA DE TECLADO ---
+        document.addEventListener('keydown', function(event) {
+            // Solo funciona si estamos en la pantalla de juego (screen-2)
+            if (document.getElementById('screen-2').classList.contains('active')) {
+                const key = event.key.toLowerCase();
+                
+                // Si el equipo activo es null, significa que nadie ha pulsado todavía
+                if (equipoActivo === null) {
+                    if (key === 'a' && !document.getElementById('btn-pulsar-caza').disabled) {
+                        pulsar('caza');
+                    } else if (key === 'l' && !document.getElementById('btn-pulsar-fant').disabled) {
+                        pulsar('fant');
+                    }
+                } 
+                // Atajo para enviar respuesta con "Enter" cuando el input está activo
+                else if (key === 'enter') {
+                    if (equipoActivo === 'caza' && !document.getElementById('btn-enviar-caza').disabled) {
+                        enviarRespuesta('caza');
+                    } else if (equipoActivo === 'fant' && !document.getElementById('btn-enviar-fant').disabled) {
+                        enviarRespuesta('fant');
+                    }
+                }
+            }
+        });
+
+        // --- MATEMÁTICAS ---
+        function calcularMCD(a, b) { while (b !== 0) { let t = b; b = a % b; a = t; } return a; }
+        function calcularMCM(a, b) { return (a * b) / calcularMCD(a, b); }
+
+        function generarPregunta() {
+            let modo = document.getElementById('game-mode').value;
+            tipoPregunta = modo === 'both' ? (Math.random() > 0.5 ? 'MCD' : 'MCM') : modo.toUpperCase();
+
+            if (tipoPregunta === 'MCD') {
+                num1 = Math.floor(Math.random() * 950) + 20;
+                num2 = Math.floor(Math.random() * 950) + 20;
+                respuestaCorrecta = calcularMCD(num1, num2);
+            } else {
+                num1 = Math.floor(Math.random() * 40) + 4;
+                num2 = Math.floor(Math.random() * 25) + 4;
+                respuestaCorrecta = calcularMCM(num1, num2);
+            }
+
+            statTotales++;
+            document.getElementById('pregunta-texto').innerText = `Calculad el ${tipoPregunta} de: ${num1} y ${num2}`;
+            document.getElementById('feedback').innerText = "";
+            resetPulsadores();
+        }
+
+        // --- CONTROL DE FLUJO ---
+        function startGame() {
+            // Configurar Nombres
+            nombreCaza = document.getElementById('name-caza-input').value.toUpperCase() || "CAZAFANTASMAS";
+            nombreFant = document.getElementById('name-fant-input').value.toUpperCase() || "FANTASMAS";
+            
+            document.getElementById('display-name-caza').innerText = nombreCaza;
+            document.getElementById('display-name-fant').innerText = nombreFant;
+            document.getElementById('btn-pulsar-caza').innerText = `PULSAR (A)`;
+            document.getElementById('btn-pulsar-fant').innerText = `PULSAR (L)`;
+
+            puntosCaza = 0; puntosFant = 0;
+            statTotales = 0; statAciertosCaza = 0; statAciertosFant = 0; statFallos = 0;
+            document.getElementById('score-caza').innerText = "0";
+            document.getElementById('score-fant').innerText = "0";
+
+            tiempoRestante = parseInt(document.getElementById('game-time').value);
+            actualizarReloj();
+
+            showScreen('screen-2');
+            generarPregunta();
+            iniciarRelojPrincipal();
+        }
+
+        function pulsar(equipo) {
+            if (equipoActivo !== null) return;
+            
+            equipoActivo = equipo;
+            clearInterval(temporizadorPrincipal); // Pausar juego
+
+            const idSufijo = equipo === 'caza' ? 'caza' : 'fant';
+            const nomActivo = equipo === 'caza' ? nombreCaza : nombreFant;
+
+            document.getElementById(`panel-${idSufijo}`).classList.add('turn-active');
+            document.getElementById(`input-${idSufijo}`).disabled = false;
+            document.getElementById(`btn-enviar-${idSufijo}`).disabled = false;
+            document.getElementById(`input-${idSufijo}`).focus();
+
+            document.getElementById('btn-pulsar-caza').disabled = true;
+            document.getElementById('btn-pulsar-fant').disabled = true;
+
+            let tRespuesta = enEstadoRebote ? 5 : 10;
+            document.getElementById('feedback').innerText = `¡${nomActivo} responde! ${tRespuesta}s`;
+            document.getElementById('feedback').style.color = "#ffcc00";
+
+            temporizadorRespuesta = setInterval(() => {
+                tRespuesta--;
+                document.getElementById('feedback').innerText = `¡${nomActivo} responde! ${tRespuesta}s`;
+                if (tRespuesta <= 0) { clearInterval(temporizadorRespuesta); procesarFallo(); }
+            }, 1000);
+        }
+
+        function enviarRespuesta(equipo) {
+            clearInterval(temporizadorRespuesta);
+            let val = parseInt(document.getElementById(`input-${equipo}`).value);
+
+            if (val === respuestaCorrecta) {
+                document.getElementById('feedback').innerText = "¡CORRECTO! +100 puntos.";
+                document.getElementById('feedback').style.color = "#39ff14";
+                if (equipo === 'caza') { puntosCaza += 100; statAciertosCaza++; } 
+                else { puntosFant += 100; statAciertosFant++; }
+                
+                document.getElementById('score-caza').innerText = puntosCaza;
+                document.getElementById('score-fant').innerText = puntosFant;
+
+                setTimeout(() => { reanudarJuego(); generarPregunta(); }, 2000);
+            } else {
+                procesarFallo();
+            }
+        }
+
+        function procesarFallo() {
+            document.getElementById('feedback').innerText = "¡ERROR! Rayos cruzados.";
+            document.getElementById('feedback').style.color = "#ff4500";
+            statFallos++;
+
+            if (!enEstadoRebote) {
+                if (equipoActivo === 'caza') puntosCaza = Math.max(0, puntosCaza - 50);
+                else puntosFant = Math.max(0, puntosFant - 50);
+                document.getElementById('score-caza').innerText = puntosCaza;
+                document.getElementById('score-fant').innerText = puntosFant;
+            }
+
+            let fallido = equipoActivo;
+            desactivarUI();
+
+            if (!enEstadoRebote) {
+                enEstadoRebote = true;
+                equipoActivo = null;
+                let rival = fallido === 'caza' ? 'fant' : 'caza';
+                let nombreRival = rival === 'caza' ? nombreCaza : nombreFant;
+                
+                setTimeout(() => {
+                    document.getElementById('feedback').innerText = `¡REBOTE PARA ${nombreRival}! (5s)`;
+                    document.getElementById(`btn-pulsar-${rival}`).disabled = false;
+                }, 1500);
+            } else {
+                setTimeout(() => { reanudarJuego(); generarPregunta(); }, 2000);
+            }
+        }
+
+        function reanudarJuego() {
+            equipoActivo = null;
+            enEstadoRebote = false;
+            iniciarRelojPrincipal();
+        }
+
+        function desactivarUI() {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('turn-active'));
+            document.querySelectorAll('input[type="number"]').forEach(i => { i.disabled = true; i.value = ""; });
+            document.querySelectorAll('.panel-inputs button').forEach(b => b.disabled = true);
+            document.getElementById('btn-pulsar-caza').disabled = true;
+            document.getElementById('btn-pulsar-fant').disabled = true;
+        }
+
+        function resetPulsadores() {
+            desactivarUI();
+            document.getElementById('btn-pulsar-caza').disabled = false;
+            document.getElementById('btn-pulsar-fant').disabled = false;
+        }
+
+        function iniciarRelojPrincipal() {
+            clearInterval(temporizadorPrincipal);
+            temporizadorPrincipal = setInterval(() => {
+                tiempoRestante--;
+                actualizarReloj();
+                if (tiempoRestante <= 0) finalizar();
+            }, 1000);
+        }
+
+        function actualizarReloj() {
+            let m = Math.floor(tiempoRestante / 60);
+            let s = tiempoRestante % 60;
+            document.getElementById('timer').innerText = `⏰ TIEMPO: ${(m<10?'0':'')+m}:${(s<10?'0':'')+s}`;
+        }
+
+        function finalizar() {
+            clearInterval(temporizadorPrincipal);
+            showScreen('screen-3');
+            
+            document.getElementById('final-name-caza').innerText = nombreCaza;
+            document.getElementById('final-name-fant').innerText = nombreFant;
+            document.getElementById('final-score-caza').innerText = puntosCaza;
+            document.getElementById('final-score-fant').innerText = puntosFant;
+
+            document.getElementById('stat-totales').innerText = statTotales;
+            document.getElementById('stat-fallos').innerText = statFallos;
+            document.getElementById('stat-aciertos-caza').innerText = statAciertosCaza;
+            document.getElementById('stat-aciertos-fant').innerText = statAciertosFant;
+
+            if (puntosCaza > puntosFant) {
+                document.getElementById('ganador-texto').innerText = `🏆 ¡GANADOR: ${nombreCaza}!`;
+                document.getElementById('ganador-texto').style.color = "#0088ff";
+            } else if (puntosFant > puntosCaza) {
+                document.getElementById('ganador-texto').innerText = `🏆 ¡GANADOR: ${nombreFant}!`;
+                document.getElementById('ganador-texto').style.color = "#cc00ff";
+            } else {
+                document.getElementById('ganador-texto').innerText = "🤝 ¡EMPATE!";
+                document.getElementById('ganador-texto').style.color = "#ffcc00";
+            }
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function restartGame() { showScreen('screen-1'); }
+    </script>
+</body>
+</html>
