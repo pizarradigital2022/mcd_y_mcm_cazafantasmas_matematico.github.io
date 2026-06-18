@@ -50,38 +50,64 @@
             display: block;
         }
 
-.img-placeholder {
-    background: #151c24;
-    border: 3px dashed #ff4500;
-    padding: 12px;
-    margin: 15px auto;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 280px; /* <--- Aumentado de 180px a 280px */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.3);
-}
+        /* 1. CORRECCIÓN: Forzamos a que las dos columnas tengan exactamente la misma altura */
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch; /* <- Obliga a ambos paneles a medir lo mismo de alto */
+            gap: 25px;
+        }
 
-.img-placeholder img {
-    width: 100%;
-    height: auto;
-    max-height: 180px; /* <--- Aumentado de 90px a 180px */
-    object-fit: contain;
-    display: block;
-}
+        /* 2. CORRECCIÓN: Convertimos el panel en un contenedor vertical que distribuye el espacio libre */
+        .panel {
+            flex: 1;
+            padding: 20px;
+            border-radius: 15px;
+            transition: all 0.2s ease;
+            border: 4px solid #333;
+            background: #11161d;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* <- Distribuye los elementos de forma matemática idéntica */
+        }
 
-/* Esta es la nueva clase renombrada para la pantalla 3 */
-.img-podio-final img {
-    max-width: 100%;
-    height: auto;
-    max-height: 350px;
-    border-radius: 6px;
-    display: block;
-    margin: 0 auto;
-    object-fit: contain;
-}
+        /* 3. CORRECCIÓN: Cajas de imágenes simétricas con altura fija */
+        .img-placeholder {
+            background: #151c24;
+            border: 3px dashed #ff4500;
+            padding: 12px;
+            margin: 15px auto;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 280px;
+            height: 180px; /* Alto fijo idéntico para que ninguna caja deforme la columna */
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.3);
+        }
+
+        /* 4. CORRECCIÓN: Adaptación perfecta de la imagen dentro de los 180px */
+        .img-placeholder img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Esta es la nueva clase renombrada para la pantalla 3 */
+        .img-podio-final img {
+            max-width: 100%;
+            height: auto;
+            max-height: 350px;
+            border-radius: 6px;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
         /* Botones de control estilo Ochentero / Retro */
         button {
             background: linear-gradient(135deg, #ff4500, #cc3300);
@@ -255,21 +281,6 @@
             text-transform: uppercase;
         }
 
-        .game-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 25px;
-        }
-
-        .panel {
-            flex: 1;
-            padding: 20px;
-            border-radius: 15px;
-            transition: all 0.2s ease;
-            border: 4px solid #333;
-            background: #11161d;
-        }
-
         /* Estilos de Bandos */
         #panel-caza { 
             border-color: #0088ff; 
@@ -428,7 +439,7 @@
                 <h2 id="display-name-caza">CAZAFANTASMAS</h2>
                 
                 <div class="img-placeholder" >
-                    <img src="./resources/equipo_cazafantasmas.png" id="img-team-caza" alt="Equipo cazafantasmas" style="max-height: 100%; max-width: 100%; color: #555;">
+                    <img src="./resources/equipo_cazafantasmas.png" id="img-team-caza" alt="Equipo cazafantasmas" style="color: #555;">
                 </div>
 
                 <h3 style="color:#fff; text-shadow:none;">Puntos: <span id="score-caza" style="color:#0088ff; font-size:24px;">0</span></h3>
@@ -444,7 +455,7 @@
                 <h2 id="display-name-fant">LOS FANTASMAS</h2>
                 
                 <div class="img-placeholder" >
-                    <img src="./resources/equipo_fantasmas.png" id="img-team-fant" alt="Equipo fantasmas" style="max-height: 100%; max-width: 100%; color: #555;">
+                    <img src="./resources/equipo_fantasmas.png" id="img-team-fant" alt="Equipo fantasmas" style="color: #555;">
                 </div>
 
                 <h3 style="color:#fff; text-shadow:none;">Puntos: <span id="score-fant" style="color:#cc00ff; font-size:24px;">0</span></h3>
@@ -480,9 +491,9 @@
                 <li>Aciertos de <span id="stat-lbl-fant" style="color:#cc00ff;"></span>: <span id="stat-aciertos-fant">0</span></li>
             </ul>
         </div>
-<div class="img-podio-final">
-    <img src="./resources/podio_fin.png" id="img-main" alt="Podio final del MCD y del mcm">
-</div>
+        <div class="img-podio-final">
+            <img src="./resources/podio_fin.png" id="img-main" alt="Podio final del MCD y del mcm">
+        </div>
 
         <button onclick="restartGame()" style="margin-top:10px;">🔄 Volver a la base (Jugar de nuevo)</button>
     </div>
@@ -719,7 +730,7 @@
         function reanudarFlujoNormal() {
             equipoActivo = null;
             enEstadoRebote = false;
-            clearInterval(temporboteGlobal = null);
+            clearInterval(temporizadorReboteGlobal); // <-- CORREGIDO: Usando la variable correcta
             activarRelojPrincipal();
         }
 
