@@ -50,20 +50,38 @@
             display: block;
         }
 
-        /* Huecos para inyección de imágenes */
-        .img-placeholder {
-            background: #151c24;
-            border: 3px dashed #ff4500;
-            padding: 10px;
-            margin: 15px auto;
-            border-radius: 10px;
-            max-width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.3);
-        }
+   .img-placeholder {
+    background: #151c24;
+    border: 3px dashed #ff4500;
+    padding: 8px;
+    margin: 15px auto;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px rgba(255, 69, 0, 0.3);
+}
 
+.img-placeholder img {
+    width: 100%;
+    height: auto;
+    max-height: 90px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Esta es la nueva clase renombrada para la pantalla 3 */
+.img-podio-final img {
+    max-width: 100%;
+    height: auto;
+    max-height: 350px;
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
         /* Botones de control estilo Ochentero / Retro */
         button {
             background: linear-gradient(135deg, #ff4500, #cc3300);
@@ -409,7 +427,7 @@
             <div id="panel-caza" class="panel">
                 <h2 id="display-name-caza">CAZAFANTASMAS</h2>
                 
-                <div class="img-placeholder" style="height: 100px;">
+                <div class="img-placeholder" >
                     <img src="./resources/equipo_cazafantasmas.png" id="img-team-caza" alt="Equipo cazafantasmas" style="max-height: 100%; max-width: 100%; color: #555;">
                 </div>
 
@@ -425,7 +443,7 @@
             <div id="panel-fant" class="panel">
                 <h2 id="display-name-fant">LOS FANTASMAS</h2>
                 
-                <div class="img-placeholder" style="height: 100px;">
+                <div class="img-placeholder" >
                     <img src="./resources/equipo_fantasmas.png" id="img-team-fant" alt="Equipo fantasmas" style="max-height: 100%; max-width: 100%; color: #555;">
                 </div>
 
@@ -462,9 +480,9 @@
                 <li>Aciertos de <span id="stat-lbl-fant" style="color:#cc00ff;"></span>: <span id="stat-aciertos-fant">0</span></li>
             </ul>
         </div>
-        <div class="img-repaso-caza">
-            <img src="./resources/podio_fin.png" id="img-main" alt="Podio final del MCD y del mcm">
-        </div>
+<div class="img-podio-final">
+    <img src="./resources/podio_fin.png" id="img-main" alt="Podio final del MCD y del mcm">
+</div>
 
         <button onclick="restartGame()" style="margin-top:10px;">🔄 Volver a la base (Jugar de nuevo)</button>
     </div>
